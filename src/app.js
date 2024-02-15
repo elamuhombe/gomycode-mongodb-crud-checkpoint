@@ -1,12 +1,8 @@
 const { MongoClient } = require('mongodb');
 
-// Connection URI
 const uri = 'mongodb://localhost:27017';
-
-// Database Name
 const dbName = 'contact';
 
-// Connect to MongoDB
 async function connectToMongoDB() {
     const client = new MongoClient(uri);
 
@@ -14,61 +10,72 @@ async function connectToMongoDB() {
         await client.connect();
         const database = client.db(dbName);
         console.log(`Connected to database "${dbName}"`);
-        return database; // Return the database object
+        return database;
     } catch (err) {
-        console.error('Error:', err);
-    } finally {
-        // Do not close the connection here
+        console.error('Error connecting to database:', err);
+        throw err;
     }
 }
 
 async function createCollection(database) {
     try {
-        // Check if the collection already exists
         const collections = await database.listCollections().toArray();
         const collectionNames = collections.map(collection => collection.name);
         
         if (!collectionNames.includes('contactlist')) {
-            // Collection does not exist, so create it
             await database.createCollection('contactlist');
             console.log('Collection "contactlist" created.');
         } else {
             console.log('Collection "contactlist" already exists.');
         }
     } catch (err) {
-        console.error('Error:', err);
+        console.error('Error creating collection:', err);
+        throw err;
     }
 }
 
-
-// Insert data into the collection
 async function insertData(database, collectionName, data) {
     const collection = database.collection(collectionName);
     try {
         const result = await collection.insertMany(data);
         console.log(`${result.insertedCount} documents inserted.`);
     } catch (err) {
-        console.error('Error:', err);
+        console.error('Error inserting data:', err);
+        throw err;
     }
 }
 
-// App function to call other functions
+async function displayAllContacts(collection) {
+    try {
+        const allContacts = await collection.find().toArray();
+        console.log('All contacts:');
+        console.log(allContacts);
+    } catch (err) {
+        console.error('Error displaying all contacts:', err);
+        throw err;
+    }
+}
+
 async function app() {
-    const database = await connectToMongoDB();
-    if (database) {
-        await createCollection(database);
-        await insertData(database, 'contactlist', data); // Insert data after creating collection
-    } else {
-        console.error('Error connecting to database.');
+    try {
+        const database = await connectToMongoDB();
+        if (database) {
+            await createCollection(database);
+            await insertData(database, 'contactlist', data);
+            await displayAllContacts(database.collection('contactlist'));
+        } else {
+            console.error('Error connecting to database.');
+        }
+    } catch (err) {
+        console.error('An unexpected error occurred:', err);
     }
 }
 
-// Data to be inserted
 const data = [
     {
         LastName: 'Ben Lahmer',
         FirstName: 'Fares',
-        Email: 'fares@gmail.com.com',
+        Email: 'fares@gmail.com',
         Age: 26
     },
     {
@@ -101,5 +108,4 @@ const data = [
     }
 ];
 
-// Call the app function to run the code
 app();
