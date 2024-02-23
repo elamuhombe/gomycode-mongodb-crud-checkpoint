@@ -79,7 +79,12 @@ output in console:
 
 - JavaScript (ES6+): The programming language used for writing server-side logic, handling HTTP requests and responses, and interacting with the MongoDB database. E.g use of async and await
 
-## Author
+## Autho
 Elaine Muhombe
 
 ## Acnowledgements
+- cloud.mongodb.com
+- medium.com website: https://medium.com/@skhans/how-to-build-a-basic-node-js-crud-app-with-mongoose-and-mongodb-3e958a36001d#:~:text=and%20scalable%20applications.-,Node.,%2C%20and%20delete%20(CRUD).
+- https://blog.avneesh.tech/building-a-crud-api-with-nodejs-and-mongodb
+- https://youtu.be/_7UQPve99r4
+  
